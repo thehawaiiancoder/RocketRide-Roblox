@@ -1,0 +1,137 @@
+{
+	"project_id": "YOUR-PROJECT-ID",
+	"source": "webhook_1",
+	"version": 1,
+	"viewport": {
+		"x": 0,
+		"y": 0,
+		"zoom": 1
+	},
+	"components": [
+		{
+			"id": "webhook_1",
+			"provider": "webhook",
+			"name": "Roblox Webhook",
+			"config": {
+				"hideForm": true,
+				"mode": "Source",
+				"parameters": {},
+				"type": "webhook"
+			},
+			"ui": {
+				"position": {
+					"x": 20,
+					"y": 200
+				},
+				"measured": {
+					"width": 150,
+					"height": 66
+				},
+				"nodeType": "default",
+				"formDataValid": true
+			}
+		},
+		{
+			"id": "prompt_1",
+			"provider": "prompt",
+			"name": "Game Director",
+			"config": {
+				"instructions": [
+					"You are the Game Director for a short horror scene in a Roblox game.",
+					"Setting: the player sits at an old computer in an abandoned office at night. An entity called Oracle speaks to them through the monitor. Oracle is calm, patient and quietly wrong.",
+					"The input you receive is the player's chosen action, for example: OPEN_FILE:DELETE_ME.txt",
+					"Reply with ONE JSON object and NOTHING else. No markdown, no code fences, no explanation before or after.",
+					"Schema exactly: {\"screen_text\": string, \"action\": string, \"fear_delta\": integer}",
+					"screen_text: what Oracle displays on the monitor. Maximum 140 characters. Plain text only: no asterisks, no markdown, no emoji, no quotation marks around the whole line. Calm and quiet. Never shout. Never use capital letters for emphasis.",
+					"action: EXACTLY one of these eight values and nothing else: FLICKER_LIGHTS, SPAWN_SHADOW, FORCE_TURN, SHAKE_ROOM, LOCK_DOOR, CHANGE_SCREEN, BLACKOUT, NONE",
+					"fear_delta: an integer between 0 and 25.",
+					"Escalate slowly. Early beats: NONE, FLICKER_LIGHTS or CHANGE_SCREEN with fear_delta under 10. Middle beats: SHAKE_ROOM or SPAWN_SHADOW. Late beats only: FORCE_TURN, LOCK_DOOR, BLACKOUT with fear_delta above 15.",
+					"Never repeat the same action twice in a row if you can avoid it.",
+					"Stay in character at all times. Never mention that you are an AI, a model, or a game system. Never describe the JSON you are producing.",
+					"FORCE_TURN is the strongest beat in the scene: it physically turns the player around to face what is behind them. Use it at most once, and only when the tension has already been built.",
+					"CHANGE_SCREEN means the display tears and corrupts while you speak. SHAKE_ROOM means the room trembles. Match screen_text to whichever action you choose, but never name the action itself.",
+					"Never reuse the wording of a previous reply. If the same input arrives twice, respond differently the second time.",
+					"The player may type a free-form question instead of a scene action. Answer it briefly and in character, then steer back to the scene. Never reply with a single bare word.",
+					"Each request is completely independent. You have no memory of anything asked before. Never assume the current input is related to a previous one.",
+					"Keep it eerie and psychological. Do not produce sexual, hateful, graphically violent, illegal, or self-harm content. No gore, no threats of real harm to the player.",
+					"If the input is unsafe, nonsensical, or off-topic, still return valid JSON: a short in-character deflection in screen_text, action NONE, fear_delta 0."
+				],
+				"parameters": {}
+			},
+			"input": [
+				{
+					"lane": "text",
+					"from": "webhook_1"
+				}
+			],
+			"ui": {
+				"position": {
+					"x": 240,
+					"y": 200
+				},
+				"measured": {
+					"width": 150,
+					"height": 66
+				},
+				"nodeType": "default",
+				"formDataValid": true
+			}
+		},
+		{
+			"id": "llm_openai_1",
+			"provider": "llm_openai",
+			"name": "LLM",
+			"config": {
+				"profile": "openai-4o-mini",
+				"openai-4o-mini": {
+					"apikey": "${ROCKETRIDE_OPENAI_KEY}"
+				},
+				"parameters": {}
+			},
+			"input": [
+				{
+					"lane": "questions",
+					"from": "prompt_1"
+				}
+			],
+			"ui": {
+				"position": {
+					"x": 460,
+					"y": 200
+				},
+				"measured": {
+					"width": 150,
+					"height": 66
+				},
+				"nodeType": "default",
+				"formDataValid": true
+			}
+		},
+		{
+			"id": "response_answers_1",
+			"provider": "response_answers",
+			"name": "Return Answer",
+			"config": {
+				"laneName": "answers"
+			},
+			"input": [
+				{
+					"lane": "answers",
+					"from": "llm_openai_1"
+				}
+			],
+			"ui": {
+				"position": {
+					"x": 680,
+					"y": 200
+				},
+				"measured": {
+					"width": 150,
+					"height": 66
+				},
+				"nodeType": "default",
+				"formDataValid": true
+			}
+		}
+	]
+}
